@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recieving station</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <!-- External CSS file -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="grid-container">
+  <!-- Header section -->
+  <header>
+    <h1>Recieving station</h1>
+    <div class="channel">
+      Channel: <span id="ch"><strong>-</strong></span>
+    </div>
+  </header>
+
+  <!-- Parameters section -->
+  <div class="param-section">
+    <!-- Parameters group 1 -->
+    <details open>
+      <summary>Parameters</summary>
+      <div class="param-block">
+        <table>
+          <tr>
+            <th>Parameter</th>
+            <th>Value</th>
+          </tr>
+          <tr>
+            <td>id</td>
+            <td><strong><id_>-</id_></strong></td>
+          </tr>
+          <tr>
+            <td>Fly time (sec)</td>
+            <td><strong><t_fly>-</t_fly></strong></td>
+          </tr>
+          <tr>
+            <td>Temperature(°С)</td>
+            <td><strong><temp>-</temp></strong></td>
+          </tr>
+          <tr>
+            <td>Pressure(kPa)</td>
+            <td><strong><press>-</press></strong></td>
+          </tr>
+          <tr>
+            <td>Height(m)</td>
+            <td><strong><alt>-</alt></strong></td>
+          </tr>
+          <tr>
+            <td>Other</td>
+            <td><strong><user_data>-</user_data></strong></td>
+          </tr>
+        </table>
+      </div>
+    </details>
+    <!-- Parameters group 2 -->
+    <details open>
+      <summary>Parameters</summary>
+      <div class="param-block">
+        <table>
+          <tr>
+            <th>Parameter</th>
+            <th>Value</th>
+          </tr>
+          <tr>
+            <td>Acceleration X(m/s²)</td>
+            <td><strong><ax>-</ax></strong></td>
+          </tr>
+          <tr>
+            <td>Acceleration Y(m/s²)</td>
+            <td><strong><ay>-</ay></strong></td>
+          </tr>
+          <tr>
+            <td>Acceleration Z(m/s²)</td>
+            <td><strong><az>-</az></strong></td>
+          </tr>
+          <tr>
+            <td>Latitude(°)</td>
+            <td><strong><lat>-</lat></strong></td>
+          </tr>
+          <tr>
+            <td>Longitude(°)</td>
+            <td><strong><lon>-</lon></strong></td>
+          </tr>
+        </table>
+      </div>
+    </details>
+  </div>
+
+  <!-- Log and Charts section -->
+  <div class="log-charts">
+    <!-- Log section -->
+    <div class="log-section">
+      <div class="log-header">
+        <strong>Data</strong>
+        <button id="downloadLog">Download log</button>
+      </div>
+      <table id="log-table">
+        <thead>
+          <tr>
+            <th>Log</th>
+          </tr>
+        </thead>
+        <tbody id="logg"></tbody>
+      </table>
+    </div>
+    <!-- Plots -->
+    <div class="chart-section">
+      <div class="chart-container">
+        <canvas id="altChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <canvas id="accZChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Map + coordinate adding -->
+  <div class="map-input-container">
+    <div class="map-section">
+      <button id="fullscreenMap" title="Fullscreen" class="fs-btn">⛶</button>
+      <div id="map"></div>
+    </div>
+    <div class="start-location">
+      <label>Latitude:</label>
+      <input type="text" id="startLat" placeholder="Широта">
+      <label>Longitude:</label>
+      <input type="text" id="startLon" placeholder="Долгота">
+      <button onclick="placeStartMarker()">Place</button>
+    </div>
+  </div>
+
+  <!-- Indicators -->
+  <div class="indicators">
+    <div class="indicator">
+      <div class="light" id="flag_start"></div>
+      <div>Start</div>
+    </div>
+    <div class="indicator">
+      <div class="light" id="flag_apoge"></div>
+      <div>Apogee</div>
+    </div>
+    <div class="indicator">
+      <div class="light" id="flag_land"></div>
+      <div>Land</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* --------------------- DOM-elements --------------------- */
+  const ch        = document.getElementById('ch');
+  const id_       = document.querySelector('id_');
+  const t_fly     = document.querySelector('t_fly');
+  const temp      = document.querySelector('temp');
+  const press     = document.querySelector('press');
+  const alt       = document.querySelector('alt');
+  const ax        = document.querySelector('ax');
+  const ay        = document.querySelector('ay');
+  const az        = document.querySelector('az');
+  const lat       = document.querySelector('lat');
+  const lon       = document.querySelector('lon');
+  const user_data = document.querySelector('user_data');
+  const flag_start= document.getElementById('flag_start');
+  const flag_apoge= document.getElementById('flag_apoge');
+  const flag_land = document.getElementById('flag_land');
+  const logg      = document.getElementById('logg');
+  const downloadLog = document.getElementById('downloadLog');
+  const fsBtn = document.getElementById('fullscreenMap');
+
+  /* --------------------- Map (Leaflet) --------------------- */
+  let map, marker, startMarker = null;
+  function initMap() {
+    map = L.map('map').setView([0, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19
+    }).addTo(map);
+    marker = L.marker([0, 0]).addTo(map);
+  }
+  initMap();
+  function updateMarker() {
+    const pos = [parseFloat(lat.textContent), parseFloat(lon.textContent)];
+    marker.setLatLng(pos);
+    map.setView(pos);
+  }
+
+  /* --------------------- Indicators --------------------- */
+  function updateIndicator(element, flag) {
+    element.style.background = flag ? '#00E676' : '#FF1744';
+  }
+
+  /* --------------------- Downloading log to txt-file --------------------- */
+  downloadLog.onclick = () => {
+    let lines = [];
+    document.querySelectorAll('#logg tr').forEach(row => {
+      lines.push(row.innerText);
+    });
+    let logText = lines.join('\n');
+    const blob = new Blob([logText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Log.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  /* --------------------- Chart.js --------------------- */
+  const altCtx = document.getElementById('altChart').getContext('2d');
+  const accZCtx = document.getElementById('accZChart').getContext('2d');
+
+  // Plot: height vs time
+  const altChart = new Chart(altCtx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'Height (м)',
+        data: [],
+        borderColor: 'rgba(255, 99, 132, 1)',
+        fill: false,
+        tension: 0.1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { 
+          title: { display: true, text: 'Time (с)', font: { size: 10 } },
+          ticks: { font: { size: 10 } }
+        },
+        y: { 
+          title: { display: true, text: 'Time (м)', font: { size: 10 } },
+          ticks: { font: { size: 10 } }
+        }
+      }
+    }
+  });
+
+  // График: ускорение Z от времени
+  const accZChart = new Chart(accZCtx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'Acceleration Z (м/с²)',
+        data: [],
+        borderColor: 'rgba(54, 162, 235, 1)',
+        fill: false,
+        tension: 0.1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { 
+          title: { display: true, text: 'Time (с)', font: { size: 10 } },
+          ticks: { font: { size: 10 } }
+        },
+        y: { 
+          title: { display: true, text: 'Acceleration Z', font: { size: 10 } },
+          ticks: { font: { size: 10 } }
+        }
+      }
+    }
+  });
+
+  /* --------------------- WebSocket --------------------- */
+  let ws = new WebSocket('ws://' + location.host + '/connect-websocket');
+  ws.onopen = () => console.log('WebSocket opened');
+  ws.onclose = () => console.log('WebSocket closed');
+  ws.onerror = error => console.error('WebSocket error:', error);
+
+  ws.onmessage = event => {
+    const data = JSON.parse(event.data);
+    ch.textContent        = data.ch;
+    id_.textContent       = data.id_;
+    t_fly.textContent     = data.t_fly;
+    temp.textContent      = data.temp;
+    press.textContent     = data.press;
+    alt.textContent       = data.alt;
+    ax.textContent        = data.ax;
+    ay.textContent        = data.ay;
+    az.textContent        = data.az;
+    lat.textContent       = data.lat;
+    lon.textContent       = data.lon;
+    // Replace : in other data
+    user_data.textContent = data.user_data.toString().replace(/,/g, ':');
+
+    const flagStart = data.flag_start === "1" || data.flag_start === true;
+    const flagApoge = data.flag_apoge === "1" || data.flag_apoge === true;
+    const flagLand  = data.flag_land  === "1" || data.flag_land  === true;
+    updateIndicator(flag_start, flagStart);
+    updateIndicator(flag_apoge, flagApoge);
+    updateIndicator(flag_land, flagLand);
+
+    updateMarker();
+
+    const row = document.createElement('tr');
+    const formattedUserData = data.user_data.toString().replace(/,/g, ':');
+    row.innerHTML = `<td>${[
+      data.id_, data.t_fly, data.temp, data.press, data.alt,
+      data.ax, data.ay, data.az, data.lat, data.lon,
+      data.flag_start, data.flag_apoge, data.flag_land, formattedUserData
+    ].join(':')}</td>`;
+    logg.appendChild(row);
+
+    const timeVal = parseFloat(data.t_fly) || 0;
+    const altVal  = parseFloat(data.alt)   || 0;
+    const azVal   = parseFloat(data.az)    || 0;
+    altChart.data.labels.push(timeVal);
+    altChart.data.datasets[0].data.push(altVal);
+    altChart.update();
+    accZChart.data.labels.push(timeVal);
+    accZChart.data.datasets[0].data.push(azVal);
+    accZChart.update();
+  };
+
+  /* --------------------- Размещение маркера старта --------------------- */
+  function placeStartMarker() {
+    const latInput = parseFloat(document.getElementById('startLat').value);
+    const lonInput = parseFloat(document.getElementById('startLon').value);
+    if (!isNaN(latInput) && !isNaN(lonInput)) {
+      if (startMarker) {
+        startMarker.setLatLng([latInput, lonInput]);
+      } else {
+        startMarker = L.marker([latInput, lonInput], {
+          icon: L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/1673/1673221.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]
+          })
+        }).addTo(map).bindPopup('Start').openPopup();
+      }
+      const group = new L.featureGroup([marker, startMarker]);
+      map.fitBounds(group.getBounds(), { padding: [20, 20] });
+    }
+  }
+
+  /* --------------------- Fullscreen map mode --------------------- */
+  fsBtn.onclick = () => {
+    const mapContainer = document.getElementById('map');
+    if (mapContainer.requestFullscreen) {
+      mapContainer.requestFullscreen();
+    } else if (mapContainer.webkitRequestFullscreen) {
+      mapContainer.webkitRequestFullscreen();
+    } else if (mapContainer.msRequestFullscreen) {
+      mapContainer.msRequestFullscreen();
+    }
+  };
+</script>
+</body>
+</html>
