@@ -25,8 +25,12 @@ This project implements a receiving station for telemetry data using the Ra01S L
 ├── style.css            # CSS for styling the web interface
 ├── lib/                 # Library folder containing required modules
 │   ├── Ra01S.py         # Driver for the Ra01S LoRa module
-│   ├── adafruit_httpserver/ # HTTP server library
-│   └── ...              # Other utility modules
+│   ├── adafruit_httpserver/ # Library for handling HTTP server functionality
+│   ├── adafruit_register/   # Library for low-level register manipulation
+│   ├── asyncio              # Library for asynchronous programming
+│   ├── BUZZER               # Module for controlling the buzzer
+│   ├── LLCC68               # Driver for the LLCC68 LoRa module
+│   └── Ra01S                # Driver for the Ra01S LoRa module
 └── README.md            # Project documentation
 ```
 
