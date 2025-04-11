@@ -7,12 +7,223 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <!-- External CSS file -->
-  <link rel="stylesheet" href="style.css">
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Doc style -->
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #121212;
+      color: #E0E0E0;
+      font-family: 'Roboto', sans-serif;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-rows: 8vh 20vh 25vh 1fr 8vh;
+      gap: 1vh;
+      height: 100vh;
+      padding: 1vh;
+      box-sizing: border-box;
+    }
+    @media (max-width: 600px) {
+      .grid-container {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+      }
+      .param-section, .log-charts, .map-input-container, .indicators {
+        margin-bottom: 1vh;
+      }
+    }
+    header {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #333;
+      padding: 0 1vw;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.8em;
+      flex: 1;
+      text-align: center;
+    }
+    .channel {
+      font-size: 1em;
+    }
+    .param-section {
+      display: flex;
+      gap: 2vw;
+    }
+    details {
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #1e1e1e;
+      margin: 0.5em 0;
+      flex: 1;
+    }
+    summary {
+      padding: 0.5em;
+      cursor: pointer;
+      font-weight: bold;
+      background: #333;
+      text-align: center;
+    }
+    .param-block {
+      overflow: hidden;
+    }
+    .param-block table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .param-block table th,
+    .param-block table td {
+      border: 1px solid #333;
+      padding: 0.4em;
+      font-size: 0.9em;
+      text-align: center;
+    }
+    .log-charts {
+      display: flex;
+      gap: 2vw;
+      height: 100%;
+    }
+    .log-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 0.5em;
+      overflow: hidden;
+    }
+    .log-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5em;
+    }
+    #log-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    #log-table th,
+    #log-table td {
+      border: 1px solid #333;
+      padding: 0.3em;
+      font-size: 0.9em;
+    }
+    #logg {
+      display: block;
+      max-height: calc(25vh - 5em);
+      overflow-y: auto;
+    }
+    .chart-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1vh;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 0.5em;
+      overflow: hidden;
+    }
+    .chart-container {
+      flex: 1;
+      position: relative;
+      min-height: 0;
+    }
+    canvas {
+      background: #fff;
+      border-radius: 4px;
+      width: 100%;
+      height: 100%;
+    }
+    .map-input-container {
+      display: flex;
+      gap: 1vw;
+      height: 100%;
+    }
+    .map-section {
+      flex: 2;
+      border: 1px solid #333;
+      border-radius: 8px;
+      position: relative;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+    }
+    .fs-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      color: #fff;
+      padding: 0.5em;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .start-location {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 0.5em;
+    }
+    .start-location label {
+      font-size: 0.9em;
+      margin-bottom: 0.5em;
+    }
+    .start-location input {
+      padding: 0.3em;
+      border-radius: 4px;
+      border: 1px solid #333;
+      background: #fff;
+      color: #000;
+      margin-bottom: 0.5em;
+      width: 80%;
+      text-align: center;
+    }
+    .start-location button {
+      padding: 0.4em 0.8em;
+      border: none;
+      border-radius: 4px;
+      background: #00E676;
+      color: #fff;
+      cursor: pointer;
+    }
+    .indicators {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2vw;
+    }
+    .indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .light {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #FF1744;
+      margin-bottom: 4px;
+    }
+  </style>
 </head>
 <body>
 <div class="grid-container">
@@ -132,9 +343,9 @@
     </div>
     <div class="start-location">
       <label>Latitude:</label>
-      <input type="text" id="startLat" placeholder="Широта">
+      <input type="text" id="startLat" placeholder="Latitude">
       <label>Longitude:</label>
-      <input type="text" id="startLon" placeholder="Долгота">
+      <input type="text" id="startLon" placeholder="Longitude">
       <button onclick="placeStartMarker()">Place</button>
     </div>
   </div>

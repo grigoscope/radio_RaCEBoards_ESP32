@@ -2,7 +2,11 @@
 
 Project based on *[RaCEBoards-ESP32](https://github.com/innopoltech/RaCEBoards-ESP32/tree/main)*
 
-This project implements a receiving station for telemetry data using the Ra01S LoRa module and an ESP32 microcontroller. The station receives telemetry data, processes it, and displays it on a web interface with real-time updates.
+---
+
+This project implements a receiving station for telemetry data using the Ra01S LoRa module and an ESP32 microcontroller. The station receives telemetry data from experimental fly models, processes it, and displays it on a web interface with real-time updates.
+
+![](interface.png)
 
 ## Features
 
@@ -23,8 +27,7 @@ This project implements a receiving station for telemetry data using the Ra01S L
 │   ├── Ra01S.py         # Driver for the Ra01S LoRa module
 │   ├── adafruit_httpserver/ # HTTP server library
 │   └── ...              # Other utility modules
-├── README.md            # Project documentation
-└── settings.toml        # Configuration file for project settings
+└── README.md            # Project documentation
 ```
 
 

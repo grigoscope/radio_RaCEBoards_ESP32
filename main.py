@@ -83,6 +83,10 @@ s.bind((HOST, PORT))
 buf = bytearray(100)
 print(f"Created UDP Server socket {server_ipv4}:{PORT}")
 
+buzzer.duty_cycle = 32000
+time.sleep(0.5)
+buzzer.duty_cycle = 0
+
 # HTTP server setup
 pool = socketpool.SocketPool(wifi.radio)
 server = Server(pool, debug=True, address_="/client")
