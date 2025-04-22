@@ -34,7 +34,6 @@ This project implements a receiving station for telemetry data using the Ra01S L
 └── README.md            # Project documentation
 ```
 
-
 ## Requirements
 
 - **Hardware**:
@@ -87,6 +86,26 @@ The web interface includes the following sections:
 - **Map**: Shows the location of the telemetry source on a map using Leaflet.
 - **Indicators**: Displays flags for start, apogee, and landing events.
 
+## Radio Data Format
+
+Received telemetry messages follow a colon-separated format:
+
+```
+id:time:temp:press:alt:ax:ay:az:lon:lat:start:deploy:land:other_user_data
+```
+
+- **id** — unique command identifier (issued by the organizers).
+- **time** — flight time in seconds (since start).
+- **temp** — temperature, °C.
+- **press** — atmospheric pressure, kPa.
+- **alt** — altitude in meters (since start).
+- **ax, ay, az** — acceleration projections on X, Y, Z axes in m/s².
+- **lon, lat** — longitude and latitude in degrees.
+- **start** — start flag (1 when launch detected).
+- **deploy** — deployment flag (e.g., release of payload).
+- **land** — landing flag (1 when landing detected).
+- **other_user_data** — any additional data fields, separated by colons.
+
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
@@ -96,3 +115,4 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 - [Adafruit](https://www.adafruit.com/) for providing CircuitPython libraries.
 - [Leaflet](https://leafletjs.com/) for map integration.
 - [Chart.js](https://www.chartjs.org/) for data visualization.
+
