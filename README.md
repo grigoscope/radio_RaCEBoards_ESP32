@@ -94,7 +94,7 @@ Received telemetry messages follow a colon-separated format:
 id:time:temp:press:alt:ax:ay:az:lon:lat:start:deploy:land:other_user_data
 ```
 
-- **id** — unique command identifier (issued by the organizers).
+- **id** — unique identifier.
 - **time** — flight time in seconds (since start).
 - **temp** — temperature, °C.
 - **press** — atmospheric pressure, kPa.

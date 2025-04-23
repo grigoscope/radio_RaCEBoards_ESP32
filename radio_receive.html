@@ -21,6 +21,7 @@
       color: #E0E0E0;
       font-family: 'Roboto', sans-serif;
     }
+  
     .grid-container {
       display: grid;
       grid-template-rows: 8vh 20vh 25vh 1fr 8vh;
@@ -29,16 +30,22 @@
       padding: 1vh;
       box-sizing: border-box;
     }
+  
     @media (max-width: 600px) {
       .grid-container {
         display: flex;
         flex-direction: column;
         height: auto;
       }
-      .param-section, .log-charts, .map-input-container, .indicators {
+      .param-section,
+      .log-charts,
+      .map-input-container,
+      .indicators {
         margin-bottom: 1vh;
       }
     }
+  
+    /* Header */
     header {
       display: flex;
       align-items: center;
@@ -54,38 +61,62 @@
     .channel {
       font-size: 1em;
     }
+  
+    /* Parameters row */
     .param-section {
       display: flex;
       gap: 2vw;
+      height: 20vh;
+      overflow: hidden;
     }
-    details {
+    .param-section details {
+      display: block;
+      margin: 0;
       border: 1px solid #333;
       border-radius: 8px;
       background: #1e1e1e;
-      margin: 0.5em 0;
-      flex: 1;
+      box-sizing: border-box;
     }
-    summary {
+    .param-section summary {
+      display: block;
       padding: 0.5em;
-      cursor: pointer;
-      font-weight: bold;
       background: #333;
+      color: #E0E0E0;
+      font-weight: bold;
       text-align: center;
+      cursor: pointer;
     }
-    .param-block {
-      overflow: hidden;
+    .param-section .param-block {
+      height: calc(20vh - 2.5em);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(224,224,224,0.3) transparent;
     }
-    .param-block table {
+    .param-section .param-block::-webkit-scrollbar {
+      width: 6px;
+    }
+    .param-section .param-block::-webkit-scrollbar-thumb {
+      background: rgba(224,224,224,0.3);
+      border-radius: 3px;
+    }
+    .param-section .param-block table {
       width: 100%;
       border-collapse: collapse;
+      table-layout: fixed;
     }
-    .param-block table th,
-    .param-block table td {
+    .param-section .param-block th,
+    .param-section .param-block td {
       border: 1px solid #333;
       padding: 0.4em;
       font-size: 0.9em;
       text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+  
+    /* Log & charts */
     .log-charts {
       display: flex;
       gap: 2vw;
@@ -121,7 +152,21 @@
       display: block;
       max-height: calc(25vh - 5em);
       overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(224,224,224,0.3) transparent;
     }
+    #logg::-webkit-scrollbar {
+      width: 6px;
+    }
+    #logg::-webkit-scrollbar-thumb {
+      background: rgba(224,224,224,0.3);
+      border-radius: 3px;
+    }
+    #logg::-webkit-scrollbar-track {
+      background: transparent;
+    }
+  
+    /* Chart section */
     .chart-section {
       flex: 1;
       display: flex;
@@ -144,6 +189,8 @@
       width: 100%;
       height: 100%;
     }
+  
+    /* Map & inputs */
     .map-input-container {
       display: flex;
       gap: 1vw;
@@ -205,6 +252,8 @@
       color: #fff;
       cursor: pointer;
     }
+  
+    /* Indicators */
     .indicators {
       display: flex;
       align-items: center;
@@ -460,7 +509,7 @@
     }
   });
 
-  // График: ускорение Z от времени
+  // Plot: acceleration Z vs time
   const accZChart = new Chart(accZCtx, {
     type: 'line',
     data: {
@@ -508,15 +557,15 @@
     az.textContent        = data.az;
     lat.textContent       = data.lat;
     lon.textContent       = data.lon;
-    // Replace : in other data
     user_data.textContent = data.user_data.toString().replace(/,/g, ':');
 
-    const flagStart = data.flag_start === "1" || data.flag_start === true;
-    const flagApoge = data.flag_apoge === "1" || data.flag_apoge === true;
-    const flagLand  = data.flag_land  === "1" || data.flag_land  === true;
-    updateIndicator(flag_start, flagStart);
-    updateIndicator(flag_apoge, flagApoge);
-    updateIndicator(flag_land, flagLand);
+    const flagStart = Number(data.flag_start) !== 0;
+    const flagApoge = Number(data.flag_apoge) !== 0;
+    const flagLand  = Number(data.flag_land)  !== 0;
+
+    updateIndicator(flag_start,  flagStart);
+    updateIndicator(flag_apoge,  flagApoge);
+    updateIndicator(flag_land,   flagLand);
 
     updateMarker();
 
@@ -540,7 +589,7 @@
     accZChart.update();
   };
 
-  /* --------------------- Размещение маркера старта --------------------- */
+  /* --------------------- Start marker --------------------- */
   function placeStartMarker() {
     const latInput = parseFloat(document.getElementById('startLat').value);
     const lonInput = parseFloat(document.getElementById('startLon').value);
