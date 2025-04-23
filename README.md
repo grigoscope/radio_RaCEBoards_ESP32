@@ -4,7 +4,7 @@ Project based on *[RaCEBoards-ESP32](https://github.com/innopoltech/RaCEBoards-E
 
 ---
 
-This project implements a receiving station for telemetry data using the Ra01S LoRa module and an ESP32 microcontroller. The station receives telemetry data from experimental fly models, processes it, and displays it on a web interface with real-time updates.
+This project implements a receiving station for telemetry data using the Ra01S LoRa module and an ESP32-S3 microcontroller. The station receives telemetry data from experimental fly models, processes it, and displays it on a web interface with real-time updates.
 
 ![](interface.png)
 
@@ -40,7 +40,7 @@ This project implements a receiving station for telemetry data using the Ra01S L
 ## Requirements
 
 - **Hardware**:
-  - ESP32 microcontroller
+  - ESP32-S3 microcontroller
   - Ra01S LoRa module
   - Buzzer (optional)
   - Button for channel switching
@@ -51,12 +51,12 @@ This project implements a receiving station for telemetry data using the Ra01S L
 ## Setup
 
 1. **Hardware Connections**:
-   - Connect the Ra01S module to the ESP32 using SPI pins.
+   - Connect the Ra01S module to the ESP32-S3 using SPI pins.
    - Connect a button to the designated GPIO pin for channel switching.
    - Optionally, connect a buzzer to the specified GPIO pin.
 
 2. **Install Dependencies**:
-   - Copy the required libraries to the `lib/` folder on the ESP32.
+   - Copy the required libraries to the `lib/` folder on the ESP32-S3.
 
 3. **Configure WiFi**:
    - Update the `ssid` and `password` variables in `main.py` with your WiFi credentials.
@@ -68,8 +68,8 @@ This project implements a receiving station for telemetry data using the Ra01S L
 ## Usage
 
 1. **Access the Web Interface**:
-   - Connect to the same WiFi network as the ESP32.
-   - Open a browser and navigate to the ESP32's IP address.
+   - Connect to the same WiFi network as the ESP32-S3.
+   - Open a browser and navigate to the ESP32-S3's IP address.
 
 2. **View Telemetry Data**:
    - The web interface displays real-time telemetry data, including parameters like altitude, temperature, and acceleration.
@@ -118,4 +118,4 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 - [Adafruit](https://www.adafruit.com/) for providing CircuitPython libraries.
 - [Leaflet](https://leafletjs.com/) for map integration.
 - [Chart.js](https://www.chartjs.org/) for data visualization.
-
+- [Innopoltech](https://github.com/innopoltech) and [vano7209](https://github.com/vano7209) for providing the RaCEBoards electronic kit and libraries.
