@@ -20,18 +20,23 @@ This project implements a receiving station for telemetry data using the Ra01S L
 ## Project Structure
 
 ```
-├── main.py              # Main script for the receiving station
-├── radio_receive.html   # HTML template for the web interface
-├── style.css            # CSS for styling the web interface
-├── lib/                 # Library folder containing required modules
-│   ├── Ra01S.py         # Driver for the Ra01S LoRa module
+├── main.py                # Main application script
+├── config.py              # WiFi and pin settings
+├── buzzer.py              # Buzzer control module
+├── channel_switcher.py    # Button handler for channel switching
+├── radio_module.py        # Ra01S driver module
+├── web_interface.py       # HTTP server and endpoint logic
+├── radio_receive.html     # Web UI template
+├── lib/                   # Support libraries and drivers
 │   ├── adafruit_httpserver/ # Library for handling HTTP server functionality
 │   ├── adafruit_register/   # Library for low-level register manipulation
 │   ├── asyncio              # Library for asynchronous programming
 │   ├── BUZZER               # Module for controlling the buzzer
 │   ├── LLCC68               # Driver for the LLCC68 LoRa module
+│   ├── I2C_SPI_protocol_Base.py # Driver for I2C-based modules
 │   └── Ra01S                # Driver for the Ra01S LoRa module
-└── README.md            # Project documentation
+├── .gitignore             # Git ignore file
+└── README.md              # Project documentation
 ```
 
 ## Requirements
