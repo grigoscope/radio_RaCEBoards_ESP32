@@ -109,10 +109,6 @@ id:time:temp:press:alt:ax:ay:az:lon:lat:start:deploy:land:other_user_data
 - **land** — landing flag (1 when landing detected).
 - **other_user_data** — any additional data fields, separated by colons.
 
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-
 ## Acknowledgments
 
 - [Adafruit](https://www.adafruit.com/) for providing CircuitPython libraries.
